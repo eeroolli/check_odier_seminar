@@ -19,6 +19,8 @@ config.read('email.ini')
 # Define the URL and other parameters
 url = "https://danielodier.com/en/seminars-list"
 
+seminars_csv = "odier_seminars.csv"
+
 # Set the sender and receiver email addresses
 sender_email = "reminder@posturepower.de"
 receiver_emails = ["eero.olli@gmail.com", "info@posturepower.de"]
@@ -46,7 +48,7 @@ finally:
 
 events = body.find_all("a", class_="btn btn-prenota")
 
-with open('odier_seminars.csv', mode='r') as file:
+with open(seminars_csv, mode='r') as file:
     reader = csv.DictReader(file)
     saved_seminars = [row for row in reader]
 
@@ -97,7 +99,7 @@ Eero
             server.sendmail(sender_email, receiver_email, message)
 
     # Replace the saved csv file with the updated online events
-    with open('odier_seminars.csv', mode='w') as file:
+    with open(seminars_csv, mode='w') as file:
         fieldnames = ['number', 'name']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
