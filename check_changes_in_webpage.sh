@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source /path/to/venv/bin/activate ds
+source /home/eero_ds/anaconda3/etc/profile.d/conda.sh   
+conda activate ds
 
 # Change to the directory containing the Python script
 cd /home/eero_ds/dataanalyst/check_odier_seminar/
