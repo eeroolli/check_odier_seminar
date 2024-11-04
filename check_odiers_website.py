@@ -1,6 +1,5 @@
-
 # # Check if Daniel Odier has announced any new Seminars
-# If there are new seminars, make sure that I know about it by sending me an email using reminder@posturepower.de
+# If there are new seminars, make sure that I know about it by sending me an email
 # this script runs in the conda env ds.
 
 import csv
@@ -12,22 +11,23 @@ from configparser import ConfigParser, ExtendedInterpolation
 from datetime import datetime
 from os import path
 
-
-config = ConfigParser(interpolation=ExtendedInterpolation())
-config.read('/keybase/private/eeroolli/secrets_for_python.ini')   #encrypted and safeguarded by keybase
-#print(f"These are the sections: {config.sections()}")
-
 print(f"Running the script '{path.basename(__file__)}'")
 
-#### Define ==========================
+#### Define Parameters ==========================
 
-# Define the URL and other parameters
-URL = "https://danielodier.com/en/seminars-list"
-
-SEMINARS_CSV = "odier_seminars.csv"  # This is where the previous info is saved.
-
+# Edit the URL and other parameters to fit your needs.
+URL = "https://danielodier.com/en/seminars-list"  # HTML page to be read
+SEMINARS_CSV = "odier_seminars.csv"  # This is where the old and new info is saved.
 SENDER_EMAIL = "reminder@posturepower.de"
-receiver_emails = ["eero.olli@gmail.com", "info@posturepower.de"]
+MY_SMTP_SECRETS = "/mnt/u/docs/.secrets/secrets_for_python.ini"
+RECEIVER_EMAILS = ["eero.olli@gmail.com", "info@posturepower.de"]
+# TODO: make the search word /seminar a variable (se egrep on line 72)
+ 
+#### No need to change anything below this point ==============
+
+config = ConfigParser(interpolation=ExtendedInterpolation())
+config.read(MY_SMTP_SECRETS)  # passwords etc that are needed
+# print(f"These are the sections: {config.sections()}")  # check for reading the secrets
 
 PASSWORD = config['EMAILREMINDER']['password']
 SMTP_SERVER=config['EMAILREMINDER']['smtp_server']
@@ -35,7 +35,6 @@ SMTP_PORT=465
 SENDER_EMAIL=config['EMAILREMINDER']['username']
 
 
-#### ==============================
 try:
     # resp = request.urlopen(url)
     resp = requests.get(URL)
@@ -81,7 +80,7 @@ online_seminars_numbers = [event['number'] for event in events_online]
 max_online_number = max(online_seminars_numbers)
 
 
-#### Compare the highest numbers and send email ============= 
+#### Compare the highest numbers and send email =============
 
 if max_saved_number >= max_online_number:
     notification_text = f"There are no new seminars"
@@ -107,7 +106,7 @@ Eero
 
     with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
         server.login(SENDER_EMAIL, PASSWORD)
-        for receiver_email in receiver_emails:
+        for receiver_email in RECEIVER_EMAILS:
             server.sendmail(SENDER_EMAIL, receiver_email, MESSAGE)
 
     # Replace the saved csv file with the updated online events if needed
